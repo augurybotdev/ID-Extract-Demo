@@ -55,7 +55,7 @@ def parse_with_reg_expressions(text):
 
 st.title("ID Info Extraction Demo")
 
-example_image_path = "19_0927_plcy_real-id-license-ny.jpg"
+example_image_path = "example-id.jpg"
 
 if "example_image_path" not in st.session_state:
     st.session_state.example_image_path = example_image_path
