@@ -5,6 +5,38 @@ import re
 import pandas as pd
 from pytesseract_container import get_text_extraction
 
+
+def check_password():
+    """Returns `True` if the user had the correct password."""
+
+    def password_entered():
+        """Checks whether a password entered by the user is correct."""
+        if st.session_state["password"] == st.secrets["password"]:
+            st.session_state["password_correct"] = True
+            del st.session_state["password"]  # don't store password
+        else:
+            st.session_state["password_correct"] = False
+
+    if "password_correct" not in st.session_state:
+        # First run, show input for password.
+        st.text_input(
+            "Password", type="password", on_change=password_entered, key="password"
+        )
+        return False
+    elif not st.session_state["password_correct"]:
+        # Password not correct, show input + error.
+        st.text_input(
+            "Password", type="password", on_change=password_entered, key="password"
+        )
+        st.error("😕 Password incorrect")
+        return False
+    else:
+        # Password correct.
+        if st.session_state.private_key == False:
+            st.stop()
+        return True
+check_password()
+
 extracted_text = get_text_extraction()
 
 if "extracted_text" not in st.session_state:
@@ -55,7 +87,7 @@ def parse_with_reg_expressions(text):
 
 st.title("ID Info Extraction Demo")
 
-example_image_path = "example-id.jpg"
+example_image_path = "Image-to-Text-Scraper-Demo/example_id.jpg"
 
 if "example_image_path" not in st.session_state:
     st.session_state.example_image_path = example_image_path
