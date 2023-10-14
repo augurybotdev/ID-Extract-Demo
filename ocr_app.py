@@ -1,19 +1,32 @@
-
-
 import streamlit as st
 from PIL import Image
-import pytesseract
 import os
 import re
 import pandas as pd
+from pytesseract_container import get_text_extraction
 
+extracted_text = get_text_extraction()
+
+if "extracted_text" not in st.session_state:
+    st.session_state.extracted_text = extracted_text
+if "upload_occurrence" not in st.session_state:
+    st.session_state.upload_occurrence = False
 if "extraction_occurrence" not in st.session_state:
     st.session_state.extraction_occurrence = False
+if "data_form_occurrence" not in st.session_state:
+    st.session_state.data_form_occurrence = False
 
-def callback_attributes():
+def data_form_callback():
+    st.session_state.data_form_occurrence = True
+    
+def extraction_callback():
     st.session_state.extraction_occurrence = True
 
-def extract_info_from_sample(text):
+def final_callback():
+    st.session_state.data_form_occurrence = False
+    st.session_state.extraction_occurrence = False
+    
+def parse_with_reg_expressions(text):
     data = {}
     name_match = re.search(r"MOTORIST\.\s*(?P<name>[A-Z\s,\.]+)\s*SAMPLE", text)
     if name_match:
@@ -55,29 +68,37 @@ if st.button("Upload Example Id"):
     temp_path = "temp_image.jpg"
     image.save(temp_path)
     st.image(st.session_state.image, caption="Uploaded Image", use_column_width=True)
-    extracted_text = pytesseract.image_to_string(temp_path)
-    if "extracted_text" not in st.session_state:
-        st.session_state.extracted_text = extracted_text    
-    parsed_data = extract_info_from_sample(extracted_text)
+    parsed_data = parse_with_reg_expressions(st.session_state.extracted_text)
     if "df" not in st.session_state:
         st.session_state.df = pd.DataFrame(list(parsed_data.items()), columns=['Field', 'Value'])
     os.remove(temp_path)
     
-if st.session_state.extraction_occurrence == False:
+if st.session_state.extraction_occurrence == False and st.session_state.upload_occurrence == True:
     with st.form("extract_form"):
         
-        extract = st.form_submit_button("Extract", on_click=callback_attributes)
+        extract = st.form_submit_button("Extract", on_click=extraction_callback)
         
-if st.session_state.extraction_occurrence == True:
+if st.session_state.extraction_occurrence == True and st.session_state.data_form_occurrence == False:
     
-    st.table(st.session_state.df)
-    csv = st.session_state.df.to_csv(index=False)
-    if "csv" not in st.session_state:
-        st.session_state.csv = csv
+    with st.form("data_form"):
+        st.data_editor(st.session_state.df)
+        csv = st.session_state.df.to_csv(index=False)
+        if "csv" not in st.session_state:
+            st.session_state.csv = csv
 
+        st.submit_button = st.form_submit_button("Confirm and Submit", on_click=data_form_callback)
+    
+if st.session_state.extraction_occurrence == True and st.session_state.data_form_occurrence == True:
+    st.markdown("""
+                ## Thank You For Submitting Your Id Info
+                """)
+    st.markdown("""
+                ### Download A Copy For Your Records Below\n
+                """)
     st.download_button(
-        label = "Download CSV",
+        label = "Download CSV File and Reset Demo",
         data=st.session_state.csv,
-        file_name = "example_id_data.csv",
-        mime="text/csv", key="download_button"
-    )                
+        file_name = "example excel file / restart demo",
+        mime="text/csv", key="download_button",
+        on_click=final_callback()
+    )
