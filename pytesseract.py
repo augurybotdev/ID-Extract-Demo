@@ -81,7 +81,7 @@ if st.session_state.extraction_occurrence == False and st.session_state.upload_o
 if st.session_state.extraction_occurrence == True and st.session_state.data_form_occurrence == False:
     
     with st.form("data_form"):
-        st.data_editor(st.session_state.df)
+        st.data_editor(st.session_state.df,  hide_index = True, )
         csv = st.session_state.df.to_csv(index=False)
         if "csv" not in st.session_state:
             st.session_state.csv = csv
