@@ -23,8 +23,8 @@ config = cloudinary.config(
 )
 # st.markdown("### This Web App is Down For Maintenance.\n\nyou can see the demo for the localized bespoke version using `pytesseract` [HERE](https://idextract.streamlit.app)")
 
-if not check_password():
-    st.stop()  # Do not continue if check_password is not True.
+# if not check_password():
+#     st.stop()  # Do not continue if check_password is not True.
 
 
 def data_form_callback():
