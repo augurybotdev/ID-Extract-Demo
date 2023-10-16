@@ -9,11 +9,19 @@ import cloudinary
 import cloudinary.uploader
 import cloudinary.api
 
-CLOUDINARY_URL = st.secrets["cloudinary"]["url"]
+api_key = st.secrets["cloudinary"]["api_key"]
+api_secret = st.secrets["cloudinary"]["api_secret"]
+cloud_name = st.secrets["cloudinary"]["cloud_name"]
+CLOUDINARY_URL = f"cloudinary://{api_key}:{api_secret}@{cloud_name}"
 os.environ["CLOUDINARY_URL"] = CLOUDINARY_URL
-config = cloudinary.config(secure=True)
 
-st.markdown("### This Web App is Down For Maintenance.\n\nyou can see the demo for the localized bespoke version using `pytesseract` [HERE](https://idextract.streamlit.app)")
+config = cloudinary.config(
+    cloud_name = st.secrets["cloudinary"]["cloud_name"],
+    api_key = st.secrets["cloudinary"]["api_key"],
+    api_secret = st.secrets["cloudinary"]["api_secret"],
+    secure = True
+)
+# st.markdown("### This Web App is Down For Maintenance.\n\nyou can see the demo for the localized bespoke version using `pytesseract` [HERE](https://idextract.streamlit.app)")
 
 if not check_password():
     st.stop()  # Do not continue if check_password is not True.
@@ -52,41 +60,31 @@ if st.button("Upload Example Id"):
     if "example_image" not in st.session_state:
         st.session_state.example_image = example_image
         
-    try:
-        extracted_data = cloudinary.uploader.upload("new_york_id.jpg", ocr = "adv_ocr")
-    except Exception as e:
-        st.write(f"**There was an error uploading your file, please try again**\n\n**{e}**")
-    
+    extracted_data = cloudinary.uploader.upload("new_york_id.jpg", ocr = "adv_ocr")
     if "extracted_data" not in st.session_state:
         st.session_state.extracted_data = extracted_data
 
     full_json_output = json.dumps(extracted_data, indent=4)
-
     if "json_output" not in st.session_state:
         st.session_state.json_output = full_json_output
 
-    parsed_data = extract_id_information(st.session_state.extracted_data)
-
+    parsed_data = extract_id_information(extracted_data)
     if "parsed_data" not in st.session_state:
         st.session_state.parsed_data = parsed_data
 
     df = pd.DataFrame(parsed_data)
-    
     if "df" not in st.session_state:
         st.session_state.df = df
 
     csv = st.session_state.df.to_csv(index=False)
-
     if "csv" not in st.session_state:
         st.session_state.csv = csv
 
     excel = st.session_state.df.to_excel('id_data.xlsx', index=False)
-
     if "excel" not in st.session_state:
             st.session_state.excel = excel
             
     output_json = json.dumps(parsed_data, indent=4)
-    
     st.image(st.session_state.example_image, caption="uploaded identification", use_column_width=True)
     st.session_state.upload_occurrence = True
     os.remove(temp_path)    
@@ -97,10 +95,11 @@ if st.session_state.extraction_occurrence == False and st.session_state.upload_o
         
 if st.session_state.extraction_occurrence == True and st.session_state.data_form_occurrence == False:
     with st.form("data_form"):
-        st.markdown("""please look over this form and update any differences or errors. 
+        st.markdown("""\
                     \n### ***!IMPORTANT!*** 
-                    \n***your information must match the information on your ID*** \n---\n*
-                    \nplease ensure this information matches exactly with the information shown on your ID.*""")
+                    \n\n***your information must match the information on your ID***
+                    \n\n*please ensure this information matches exactly with the information shown on your ID.*
+                    """)
         with st.sidebar:
             st.image(st.session_state.example_image, caption="uploaded ID",width=None)
             unparsed_text_expander = st.expander("unparsed text")
@@ -108,9 +107,9 @@ if st.session_state.extraction_occurrence == True and st.session_state.data_form
                 st.write(get_annotated_text(st.session_state.extracted_data))
                 
         edited_data = st.data_editor(st.session_state.df,  hide_index=True)
-        
         if "edited_data" not in st.session_state:
             st.session_state.edited_data = edited_data
+            
         submit_button = st.form_submit_button("Confirm and Submit", on_click=data_form_callback)
         
 if st.session_state.extraction_occurrence == True and st.session_state.data_form_occurrence == True:
