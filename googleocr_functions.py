@@ -8,6 +8,9 @@ import cloudinary
 import cloudinary.uploader
 import cloudinary.api
 
+if "password" not in st.session_state:
+    st.session_state.password = None
+
 def check_password():
     """Returns `True` if the user had the correct password."""
     def password_entered():
