@@ -8,6 +8,25 @@ import cloudinary
 import cloudinary.uploader
 import cloudinary.api
 
+def check_password():
+    """Returns `True` if the user had the correct password."""
+    def password_entered():
+        """Checks whether a password entered by the user is correct."""
+        if hmac.compare_digest(st.session_state["password"], st.secrets["password"]):
+            st.session_state["password_correct"] = True
+            del st.session_state["password"]  # Don't store the password.
+        else:
+            st.session_state["password_correct"] = False
+    if st.session_state.get("password_correct", False):
+        return True
+    st.text_input(
+        "Password", type="password", on_change=password_entered, key="password"
+    )
+    if "password_correct" in st.session_state:
+        st.error("😕 Password incorrect")
+    return False
+
+
 def get_annotated_text(result):
     ocr_text = result['info']['ocr']['adv_ocr']['data'][0]['textAnnotations'][0]['description']
     return ocr_text
@@ -71,26 +90,3 @@ def extract_id_information(result):
 #                                 """
 # # How can I adjust my script so the the dataframe is generated looks like the desired outcome?
 # # How can I make the regex work with more examples of Id's, not just the one example-id?
-
-def check_password():
-    """Returns `True` if the user had the correct password."""
-
-    def password_entered():
-        """Checks whether a password entered by the user is correct."""
-        if hmac.compare_digest(st.session_state["password"], st.secrets["password2"]):
-            st.session_state["password_correct"] = True
-            del st.session_state["password"]  # Don't store the password.
-        else:
-            st.session_state["password_correct"] = False
-
-    # Return True if the password is validated.
-    if st.session_state.get("password_correct", False):
-        return True
-
-    # Show input for password.
-    st.text_input(
-        "Password", type="password", on_change=password_entered, key="password"
-    )
-    if "password_correct" in st.session_state:
-        st.error("😕 Password incorrect")
-    return False
