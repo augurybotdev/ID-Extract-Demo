@@ -81,3 +81,10 @@ if st.session_state.extraction_occurrence == True and st.session_state.data_form
                 ### *To see an example of a third party integrative service integration that uses Google Vision as the ocr engine, click on the link below*.
                 [**3rd Party OCR Example Link**](https://idextract.streamlit.app)
                 """)
+    
+    reset_button = st.button("RESET DEMO", on_click=final_callback)
+    
+    if reset_button:
+        for key in st.session_state.keys():
+            del st.session_state[key]
+        st.rerun()
