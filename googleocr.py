@@ -20,8 +20,8 @@ config = cloudinary.config(secure=True)
 import hmac
 import streamlit as st
 
-# if not check_password():
-#     st.stop()  # Do not continue if check_password is not True.
+if not check_password():
+    st.stop()  # Do not continue if check_password is not True.
 
 # if check_password():
 
