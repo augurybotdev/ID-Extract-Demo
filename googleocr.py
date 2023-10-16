@@ -16,7 +16,7 @@ os.environ["CLOUDINARY_URL"] = CLOUDINARY_URL  # Set the environment variable
 config = cloudinary.config(secure=True)
 
 # streamlit_app.py
-
+st.markdown("### This Web App is Down For Maintenance.\n\nyou can see the demo for the localized bespoke version using `pytesseract` [HERE](https://idextract.streamlit.app)")
 import hmac
 import streamlit as st
 
