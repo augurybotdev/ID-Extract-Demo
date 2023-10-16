@@ -1,8 +1,6 @@
 import streamlit as st
 import streamlit as st
-import streamlit_authenticator as stauth
 import os
-import hmac
 import pandas as pd
 from PIL import Image
 import json
