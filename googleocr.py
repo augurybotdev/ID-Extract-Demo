@@ -1,4 +1,6 @@
 import streamlit as st
+import streamlit as st
+import streamlit_authenticator as stauth
 import os
 import hmac
 import pandas as pd
@@ -11,50 +13,25 @@ import cloudinary
 import cloudinary.uploader
 import cloudinary.api
 api_secret = os.getenv("api_secret")
+
 CLOUDINARY_URL = st.secrets["cloudinary"]["url"] if "cloudinary" in st.secrets else os.getenv("CLOUDINARY_URL")
+
+if "cloudinary" in st.secrets:
+    st.write("Cloudinary URL found in secrets.")
+else:
+    st.write("Cloudinary URL not found in secrets, fetching from .env.")
+
 os.environ["CLOUDINARY_URL"] = CLOUDINARY_URL  # Set the environment variable
+
 config = cloudinary.config(secure=True)
 
-# streamlit_app.py
+print("****1. Set up and configure the SDK:****\nCredentials: ", config.cloud_name, config.api_key, "\n")
+
 st.markdown("### This Web App is Down For Maintenance.\n\nyou can see the demo for the localized bespoke version using `pytesseract` [HERE](https://idextract.streamlit.app)")
-
-# streamlit_app.py
-
-import hmac
-import streamlit as st
-
-
-def check_password():
-    """Returns `True` if the user had the correct password."""
-
-    def password_entered():
-        """Checks whether a password entered by the user is correct."""
-        if hmac.compare_digest(st.session_state["password"], st.secrets["password"]):
-            st.session_state["password_correct"] = True
-            del st.session_state["password"]  # Don't store the password.
-        else:
-            st.session_state["password_correct"] = False
-
-    # Return True if the passward is validated.
-    if st.session_state.get("password_correct", False):
-        return True
-
-    # Show input for password.
-    st.text_input(
-        "Password", type="password", on_change=password_entered, key="password"
-    )
-    if "password_correct" in st.session_state:
-        st.error("😕 Password incorrect")
-    return False
-
 
 if not check_password():
     st.stop()  # Do not continue if check_password is not True.
 
-# Main Streamlit app starts here
-st.write("Here goes your normal Streamlit app...")
-st.button("Click me")
-print("****1. Set up and configure the SDK:****\nCredentials: ", config.cloud_name, config.api_key, "\n")
 
 def data_form_callback():
     st.session_state.data_form_occurrence = True 
