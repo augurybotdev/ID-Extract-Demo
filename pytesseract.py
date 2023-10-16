@@ -82,7 +82,7 @@ if st.session_state.extraction_occurrence == True and st.session_state.data_form
                 [**3rd Party OCR Example Link**](https://idextract.streamlit.app)
                 """)
     
-    reset_button = st.button("RESET DEMO", on_click=final_callback)
+    reset_button = st.button("RESET DEMO")
     
     if reset_button:
         for key in st.session_state.keys():
