@@ -1,29 +1,17 @@
 import streamlit as st
-import streamlit as st
+import re
 import os
 import pandas as pd
 from PIL import Image
 import json
 from googleocr_functions import check_password, extract_id_information, get_annotated_text
-from dotenv import load_dotenv
-load_dotenv()
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
-api_secret = os.getenv("api_secret")
 
-CLOUDINARY_URL = st.secrets["cloudinary"]["url"] if "cloudinary" in st.secrets else os.getenv("CLOUDINARY_URL")
-
-if "cloudinary" in st.secrets:
-    st.write("Cloudinary URL found in secrets.")
-else:
-    st.write("Cloudinary URL not found in secrets, fetching from .env.")
-
-os.environ["CLOUDINARY_URL"] = CLOUDINARY_URL  # Set the environment variable
-
+CLOUDINARY_URL = st.secrets["cloudinary"]["url"]
+os.environ["CLOUDINARY_URL"] = CLOUDINARY_URL
 config = cloudinary.config(secure=True)
-
-print("****1. Set up and configure the SDK:****\nCredentials: ", config.cloud_name, config.api_key, "\n")
 
 st.markdown("### This Web App is Down For Maintenance.\n\nyou can see the demo for the localized bespoke version using `pytesseract` [HERE](https://idextract.streamlit.app)")
 
@@ -64,7 +52,10 @@ if st.button("Upload Example Id"):
     if "example_image" not in st.session_state:
         st.session_state.example_image = example_image
         
-    extracted_data = cloudinary.uploader.upload("new_york_id.jpg", ocr = "adv_ocr")
+    try:
+        extracted_data = cloudinary.uploader.upload("new_york_id.jpg", ocr = "adv_ocr")
+    except Exception as e:
+        st.write(f"**There was an error uploading your file, please try again**\n\n**{e}**")
     
     if "extracted_data" not in st.session_state:
         st.session_state.extracted_data = extracted_data
