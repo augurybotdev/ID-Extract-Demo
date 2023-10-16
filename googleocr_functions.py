@@ -70,26 +70,3 @@ def extract_id_information(result):
                 item["Id Info"] = refined_address
 
     return extracted_data_list
-
-# extracted_data = cloudinary.uploader.upload("example_id.jpg", ocr = "adv_ocr")
-# parsed_data = extract_id_information(st.session_state.extracted_data)
-# df = pd.DataFrame([parsed_data])
-# edited_data = st.data_editor(st.session_state.df,  hide_index=True)
-# # in it's current configuration it resembles:
-# current_outcome_markdown_table_example = """
-# | Full Name | Date of Birth | Address | ID Number | Issue Date | Expiry Date | Gender | Height | 
-# | MICHAEL, MATTHEW | 10/30/1972 | 2345 ANYWHERE STREET | 123 456 789 | 10/30/2017 | 10/30/2025 | M | 5'-08 |
-# """
-# # To show you what the OCR Model is returning, that we need to parse:
-# text_for_parsing = st.write(get_annotated_text(st.session_state.extracted_data))
-# # using an example Id we receive the following from the `ocr` response:
-# # "`text_for_parsing` = TORM STAPLE 1400 SERIGALA NEW YORK STATE USA DRIVER LICENSE HE Class D SAMPLE STATE -Les ID 123 456 789 MOTORIST MICHAEL, MATTHEW 2345 ANYWHERE STREET YOUR CITY, NY 12345 Sex M Height 5'-08" Eyes BRO DOB 10/30/1972 Expires 10/30/2025 E NONE Michael Matthew Motorist & NONE OCT 72 R Issued 10/30/2017 **1982 MICHAEL EXCELSIO Organ Donor"
-# desired_outcome_markdown_table_example = """
-#                                 |Label | Id Info | regex pattern |
-#                                 |:-----|:--------|:--------------|
-#                                 |Full Name | MICHAEL, MATTHEW | ([A-Z\s,]+) |
-#                                 | Data of Birth | 10/30/1972 | (\d{2}\/\d{2}\/\d{4})|
-#                                 | Address | etc... | etc...|
-#                                 """
-# # How can I adjust my script so the the dataframe is generated looks like the desired outcome?
-# # How can I make the regex work with more examples of Id's, not just the one example-id?
