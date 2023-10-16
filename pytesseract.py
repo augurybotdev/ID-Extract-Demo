@@ -79,7 +79,7 @@ if st.session_state.extraction_occurrence == True and st.session_state.data_form
     st.markdown("""
                 ### *This example demo is based on the use of a private, custom implementation of the `pytesseract` library*
                 ### *To see an example of a third party integrative service integration that uses Google Vision as the ocr engine, click on the link below*.
-                [**3rd Party OCR Example Link**](https://idextract.streamlit.app)
+                [**3rd Party OCR Example Link**](https://idextract2.streamlit.app)
                 """)
     
     reset_button = st.button("RESET DEMO")
