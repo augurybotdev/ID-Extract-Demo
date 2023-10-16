@@ -1,10 +1,10 @@
 import streamlit as st
-import re
 import os
+import hmac
 import pandas as pd
 from PIL import Image
 import json
-from googleocr_functions import check_password, extract_id_information
+from googleocr_functions import check_password, extract_id_information, get_annotated_text
 from dotenv import load_dotenv
 load_dotenv()
 import cloudinary
@@ -16,14 +16,10 @@ os.environ["CLOUDINARY_URL"] = CLOUDINARY_URL  # Set the environment variable
 config = cloudinary.config(secure=True)
 
 # streamlit_app.py
-st.markdown("### This Web App is Down For Maintenance.\n\nyou can see the demo for the localized bespoke version using `pytesseract` [HERE](https://idextract.streamlit.app)")
-import hmac
-import streamlit as st
+st.markdown("### This Web App is Down For Maintenance.\n\nyou can see the demo for the localized bespoke version using `pytesseract` [HERE](https://idextract2.streamlit.app)")
 
 if not check_password():
     st.stop()  # Do not continue if check_password is not True.
-
-# if check_password():
 
 print("****1. Set up and configure the SDK:****\nCredentials: ", config.cloud_name, config.api_key, "\n")
 
@@ -52,15 +48,15 @@ if "json" not in st.session_state:
 st.title("ID Info Extraction Demo")
 
 if st.button("Upload Example Id"):
-    example_image = "example_id.jpg"
+    example_image = "new_york_id.jpg"
     temp_path = "temp_path.jpg"
-    image = Image.open('example_id.jpg')
+    image = Image.open('new_york_id.jpg')
     image.save(temp_path)
     
     if "example_image" not in st.session_state:
         st.session_state.example_image = example_image
         
-    extracted_data = cloudinary.uploader.upload("example_id.jpg", ocr = "adv_ocr")
+    extracted_data = cloudinary.uploader.upload("new_york_id.jpg", ocr = "adv_ocr")
     
     if "extracted_data" not in st.session_state:
         st.session_state.extracted_data = extracted_data
@@ -75,7 +71,7 @@ if st.button("Upload Example Id"):
     if "parsed_data" not in st.session_state:
         st.session_state.parsed_data = parsed_data
 
-    df = pd.DataFrame([parsed_data])
+    df = pd.DataFrame(parsed_data)
     
     if "df" not in st.session_state:
         st.session_state.df = df
@@ -102,12 +98,16 @@ if st.session_state.extraction_occurrence == False and st.session_state.upload_o
         
 if st.session_state.extraction_occurrence == True and st.session_state.data_form_occurrence == False:
     with st.form("data_form"):
-        st.sidebar.image(st.session_state.example_image, caption="uploaded ID",width=None)
         st.markdown("""please look over this form and update any differences or errors. 
                     \n### ***!IMPORTANT!*** 
                     \n***your information must match the information on your ID*** \n---\n*
                     \nplease ensure this information matches exactly with the information shown on your ID.*""")
-        
+        with st.sidebar:
+            st.image(st.session_state.example_image, caption="uploaded ID",width=None)
+            unparsed_text_expander = st.expander("unparsed text")
+            with unparsed_text_expander:
+                st.write(get_annotated_text(st.session_state.extracted_data))
+                
         edited_data = st.data_editor(st.session_state.df,  hide_index=True)
         
         if "edited_data" not in st.session_state:

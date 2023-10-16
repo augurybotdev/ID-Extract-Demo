@@ -18,7 +18,7 @@ if "extraction_occurrence" not in st.session_state:
     st.session_state.extraction_occurrence = False
 if "data_form_occurrence" not in st.session_state:
     st.session_state.data_form_occurrence = False
-    
+
 def data_form_callback():
     st.session_state.data_form_occurrence = True
 def extraction_callback():
@@ -28,7 +28,7 @@ def final_callback():
     st.session_state.extraction_occurrence = False
     
 st.title("ID Info Extraction Demo")
-example_image_path = "example_id.jpg"
+example_image_path = "new_york_id.jpg"
 if "example_image_path" not in st.session_state:
     st.session_state.example_image_path = example_image_path
     
